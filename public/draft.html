@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <style>
+    html, body {
+      height: 100%;
+    }
+    </style>
+
+    <title>Adobe Workflow Example</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Adobe Document Workflow Example</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Upload Another File</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="draft.html">Draft View <span class="sr-only">(current)</span></a>
+            </li>
+          </ul>
+        </div>
+    </nav>
+    <div class="container-fluid h-100">
+        <p>Review and add comments to this document then press Save to upload changes.</p>
+        <div id="adobe-dc-view"></div>
+    </div>
+
+    <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+    <script type="text/javascript">
+        let params = new URLSearchParams( window.location.search );
+        let filename = params.get( "file" );
+        document.addEventListener( "adobe_dc_view_sdk.ready", () => { 
+            var adobeDCView = new AdobeDC.View( { 
+                clientId: "YOUR CLIENT ID HERE",
+                divId: "adobe-dc-view",
+                locale: "en-US",
+            } );
+            adobeDCView.previewFile( {
+                content: { location: { url: "drafts/" + filename } },
+                metaData: { fileName: "Draft Version.pdf" }
+            }, {
+                embedMode: "FULL_WINDOW",
+                showAnnotationTools: true,
+                showPageControls: true
+            } );
+            adobeDCView.registerCallback(
+                AdobeDC.View.Enum.CallbackType.GET_USER_PROFILE_API,
+                () => {
+                    return new Promise( ( resolve, reject ) => {
+                        resolve({
+                            code: AdobeDC.View.Enum.ApiResponseCode.SUCCESS,
+                            data: {
+                                userProfile: {
+                                    name: "Document Editor",
+                                    firstName: "Document",
+                                    lastName: "Editor",
+                                    email: "document.editor@adobe.com"
+                                }
+                            }
+                        });
+                    });
+                }
+            );
+            adobeDCView.registerCallback(
+                AdobeDC.View.Enum.CallbackType.SAVE_API,
+                ( metaData, content, options ) => {
+                    return new Promise( ( resolve, reject ) => {
+                        let formData = new FormData();
+                        formData.append( "pdf", new Blob( [ content ] ), "drafts/" + filename );
+                        fetch( "/save", {
+                            method: "POST",
+                            body: formData
+                        }).then( resp => {
+                            resolve({
+                                code: AdobeDC.View.Enum.ApiResponseCode.SUCCESS,
+                                data: {
+                                    /* Updated file metadata after successful save operation */
+                                    metaData: Object.assign( metaData, {} )
+                                }
+                            });
+                        });
+                    });
+                },
+                {
+                    autoSaveFrequency: 0,
+                    enableFocusPolling: false,
+                    showSaveButton: true
+                }
+            );
+        });
+    </script>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <style>
+    html, body {
+      height: 100%;
+    }
+    </style>
+
+    <title>Adobe Workflow Example</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Adobe Document Workflow Example</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+    <div class="container-fluid h-100">
+		<div class="container-fluid py-3">
+			<h1>Upload documents for review</h1>
+			<p>Supported formats are: .doc, .docx, .ppt, .pptx, .xls, .xlsx, .txt, .rtf, .bmp, .jpg, .gif, .tiff, .png</p>
+			
+			<form ref='uploadForm' 
+				action='/upload' 
+				method='post' 
+				encType="multipart/form-data">
+				<div class="form-group">
+					<input type="file" class="form-control-file" name="myFile">
+				</div>
+				<input type="submit" value="Upload File" class="btn btn-primary" />
+			</form>
+		</div>
+		<div class="container-fluid py-3">
+			<h1>Select a document for review:</h1>
+			<ul id="filelist" class="list-group">
+				<li class="list-group-item">No Documents</li>
+			</ul>
+		</div>
+		<div class="container-fluid py-3">
+			<h1>Finalize documents and combine</h1>
+			<a href="/finalize" class="btn btn-success">Download final PDF</a>
+		</div>
+    </div>
+
+	<script>
+		// Load current files
+		fetch( "/files" )
+		.then( r => r.json() )
+		.then( files => {
+			if( files && files.length > 0 ) {
+				$( "#filelist" ).empty();
+				files.forEach( file => {
+					$( "#filelist" ).append( `<li class="list-group-item"><a href="/draft.html?file=${file}">${file}</a></li>` );
+				})
+			}
+		});
+	</script>
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
+</html>

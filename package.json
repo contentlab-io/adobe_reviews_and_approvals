@@ -1,0 +1,24 @@
+{
+  "name": "adobepdfworkflowexample",
+  "version": "1.0.0",
+  "description": "Adobe PDF API Review and Approvals Workflow Example",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/instafluff/AdobePDFWorkflowExample.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/instafluff/AdobePDFWorkflowExample/issues"
+  },
+  "homepage": "https://github.com/instafluff/AdobePDFWorkflowExample#readme",
+  "dependencies": {
+    "@adobe/documentservices-pdftools-node-sdk": "^1.3.0",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.1"
+  }
+}
